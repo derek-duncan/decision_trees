@@ -1,5 +1,14 @@
 defmodule DecisionTrees do
 
+  def seed do
+    list = [
+      [body: "aluminum", weight: 2, color: "gray"],
+      [body: "plastic", weight: 4, color: "black"],
+      [body: "plastic", weight: 2, color: "gray"]
+    ]
+    divide_list(list, :weight, 3)
+  end
+
   @doc """
   Divide a list into two children lists
   """
