@@ -1,4 +1,4 @@
 # DecisionTrees
 A Decision Tree implementation in Elixir.
 
-** Development mode **
+*Development mode*
