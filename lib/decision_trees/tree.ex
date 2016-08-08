@@ -2,8 +2,7 @@ defmodule DecisionTrees.Tree do
   @moduledoc """
   Builds the decision tree
   """
-
-  alias DecisionTrees.Tree, as: Tree
+  alias DecisionTrees.{Tree, Calculate, Splitter, Counter}
 
   defstruct key: nil, value: nil, results: nil, truthy_tree: nil, falsy_tree: nil
 
@@ -15,13 +14,14 @@ defmodule DecisionTrees.Tree do
 
   # TODO: Split this into smaller methods
   def build(dataset, target_key) do
-    current_entropy_score = DecisionTrees.Calculate.entropy(dataset, target_key)
+    current_entropy_score = Calculate.entropy(dataset, target_key)
 
     # key_values = %{
     #   :body => %{"aluminum" => 1, "plastic" => 1},
     #   :weight => %{2 => 1, 5 => 1}
     # }
-    keys = Keyword.keys(hd(dataset)) # Get the first item's keys as a template
+    # TODO: We can use pattern matching here
+    keys = Keyword.keys(hd(dataset)) # Get the first item's keys to use as a template
     key_values = Enum.reduce(keys, %{}, fn key, values ->
       Map.put(values, key, Enum.reduce(dataset, %{}, fn item, values ->
         Map.put(values, item[key], 1)
@@ -30,11 +30,11 @@ defmodule DecisionTrees.Tree do
 
     best_results = Enum.reduce key_values, %{}, fn {key, value}, _acc ->
       Enum.reduce value, %{best_gain: 0, best_criteria: [], best_sets: []}, fn {value_key, _}, best ->
-        {set1, set2} = DecisionTrees.Splitter.dataset dataset, key, value_key
+        {set1, set2} = Splitter.dataset dataset, key, value_key
 
         # Information gain
         p = length(set1) / length(dataset)
-        gain = current_entropy_score - p * DecisionTrees.Calculate.entropy(set1, target_key) - (1 - p) * DecisionTrees.Calculate.entropy(set2, target_key)
+        gain = current_entropy_score - p * Calculate.entropy(set1, target_key) - (1 - p) * Calculate.entropy(set2, target_key)
         if gain > best[:best_gain] and length(set1) > 0 and length(set2) > 0 do
           best = best
           |> Map.put(:best_gain, gain)
@@ -54,7 +54,7 @@ defmodule DecisionTrees.Tree do
       }
     else
       %Tree{
-        results: DecisionTrees.Counter.unique_values(dataset, target_key)
+        results: Counter.unique_values(dataset, target_key)
       }
     end
   end
