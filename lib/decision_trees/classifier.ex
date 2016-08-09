@@ -1,25 +1,12 @@
 defmodule DecisionTrees.Classifier do
-  # TODO: Terrible code. Refactor :)
-  def classify(observation, tree) do
-    if tree.results do
-      tree.results
+  def classify(observation, %{results: nil} = tree) do
+    target_value = observation[tree.key]
+    branch = if is_number(target_value) do
+      if target_value >= tree.value, do: tree.truthy_tree, else: tree.falsy_tree
     else
-      value = observation[tree.key]
-      branch = None
-      if is_number(value) do
-        if value >= tree.value do
-          branch = tree.truthy_tree
-        else
-          branch = tree.falsy_tree
-        end
-      else
-        if value == tree.value do
-          branch = tree.truthy_tree
-        else
-          branch = tree.falsy_tree
-        end
-      end
-      classify(observation, branch)
+      if target_value == tree.value, do: tree.truthy_tree, else: tree.falsy_tree
     end
+    classify(observation, branch)
   end
+  def classify(_, %{results: results}), do: results
 end
