@@ -2,7 +2,7 @@ defmodule DecisionTrees.Splitter do
   @doc ~S"""
   Divide items into two children lists
   """
-  def dataset(dataset, split_key, split_value) do
+  def data(dataset, split_key, split_value) do
     dataset
     |> Enum.partition(fn data -> compare_for_split? data[split_key], split_value end)
   end
