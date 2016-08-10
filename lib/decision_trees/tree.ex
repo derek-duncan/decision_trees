@@ -12,6 +12,17 @@ defmodule DecisionTrees.Tree do
   """
   def build([], _target_key), do: %Tree{}
   # TODO: Split this into smaller methods
+
+  def build([head | _] = dataset, target_key) when is_list(head) do
+    dataset_map = Enum.into(dataset, [], fn item ->
+      Enum.reduce(item, %{}, fn value, values ->
+        Map.put(values, values, value)
+      end)
+    end)
+    IO.inspect dataset_map
+    build(dataset_map, target_key)
+  end
+
   def build(dataset, target_key) do
     key_values = possible_values(dataset, target_key)
     best_results = Enum.reduce(key_values, %{}, &narrow_values(&1, &2, dataset: dataset, target_key: target_key))
