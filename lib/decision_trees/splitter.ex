@@ -2,9 +2,9 @@ defmodule DecisionTrees.Splitter do
   @doc ~S"""
   Divide items into two children lists
   """
-  def data(dataset, split_key, split_value) do
-    dataset
-    |> Enum.partition(fn data -> compare_for_split? data[split_key], split_value end)
+  def data(dataset_map, split_key, split_value) do
+    dataset_map
+    |> Enum.partition(fn data -> compare_for_split?(data[split_key], split_value) end)
   end
 
   # Number comparison
