@@ -41,9 +41,9 @@ defmodule DecisionTrees.Tree do
   end
 
   # Finds all the possible values for keys in dataset
-  defp possible_values(dataset_map, exclude_key \\ nil) do
+  defp possible_values(dataset_map, exclude_key) do
     keys = hd(dataset_map) |> Map.keys |> Enum.reject(&(&1 == exclude_key))
-    key_values = Enum.reduce(keys, %{}, fn key, acc ->
+    Enum.reduce(keys, %{}, fn key, acc ->
       Map.put(acc, key, Enum.reduce(dataset_map, %{}, fn item, acc ->
         Map.put(acc, item[key], 1)
       end))
@@ -51,7 +51,7 @@ defmodule DecisionTrees.Tree do
   end
 
   # Get the best tree results
-  defp narrow_values({key, values_map}, acc, [dataset_map: dataset_map, target_key: target_key]) do
+  defp narrow_values({key, values_map}, _acc, [dataset_map: dataset_map, target_key: target_key]) do
     results = %{best_gain: 0, best_criteria: [], best_sets: []}
     Enum.reduce values_map, results, fn {value, _}, best_results ->
       {set1, set2} = Splitter.data(dataset_map, key, value)
@@ -72,6 +72,6 @@ defmodule DecisionTrees.Tree do
   defp calculate_gain(dataset_map, set1, set2, target_key) do
     p = length(set1) / length(dataset_map)
     [base_e, set1_e, set2_e] = [dataset_map, set1, set2] |> Enum.map(&Calculate.entropy(&1, target_key))
-    gain = base_e - p * set1_e - (1 - p) * set2_e
+    base_e - p * set1_e - (1 - p) * set2_e
   end
 end
